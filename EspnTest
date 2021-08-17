@@ -1,0 +1,37 @@
+using System;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
+
+class HelloSelenium
+{
+    static void Main()
+    {
+        using (IWebDriver driver = new ChromeDriver())
+
+          
+        {/// this goes to espn.com, takes a screenshot of the homepage, and saves it to file
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            driver.Navigate().GoToUrl("https://www.espn.com");
+            Screenshot _screenshot = (driver as ITakesScreenshot).GetScreenshot();
+
+            _screenshot.SaveAsFile("C:\\Users\\tyler\\Desktop\\testautomationfile.png", ScreenshotImageFormat.Png);
+
+           ///this clicks on the top headline and finds the article body to save to a file
+            driver.FindElement(By.CssSelector("section.col-three > div.headlineStack ul > li:first-of-type")).Click();
+            wait.Until(webDriver => webDriver.FindElement(By.CssSelector("div.article-body")).Displayed);
+            String _articleBodyString = driver.FindElement(By.CssSelector("div.article-body")).Text;
+
+            System.IO.File.WriteAllText("C:\\Users\\tyler\\Desktop\\test.txt", _articleBodyString);
+
+            ///this clicks a sport to follow for the user
+            driver.FindElement(By.CssSelector("header.user-account-management li > a#global-user-trigger")).Click();
+            driver.FindElement(By.CssSelector("div.current-favorites a.button")).Click();
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+            IWebElement iframe = driver.FindElement(By.CssSelector("iframe#favorites-manager-iframe"));
+            driver.SwitchTo().Frame(iframe);
+            driver.FindElement(By.CssSelector("section.FavMgmt__Col li.FavMgmt__Item:nth-of-type(3) button")).Click();
+            
+        }
+    }
+}
